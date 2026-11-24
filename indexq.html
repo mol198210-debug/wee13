@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>GPS 이동 경로 지도</title>
+
+    <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>GPS 이동 경로 지도</h2>
+    <p>마커를 클릭하면 해당 지점의 속도를 확인할 수 있습니다.</p>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+
+        // 위도, 경도, 속도 데이터
+        const gpsData = [
+            [42.363400, -71.098465, 21],
+            [42.363327, -71.097588, 23],
+            [42.363255, -71.096710, 17],
+            [42.363182, -71.095833, 22],
+            [42.363110, -71.094955, 14],
+            [42.363037, -71.094078, 16],
+            [42.362965, -71.093201, 18],
+            [42.362892, -71.092323, 22],
+            [42.362820, -71.091446, 17],
+            [42.362747, -71.090569, 23],
+            [42.362675, -71.089691, 14],
+            [42.362602, -71.088814, 19],
+            [42.362530, -71.087936, 16],
+            [42.362457, -71.087059, 16],
+            [42.362385, -71.086182, 21]
+        ];
+
+        // 지도 생성
+        const map = L.map('map');
+
+        // OpenStreetMap 연결
+        L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: '&copy; OpenStreetMap contributors'
+            }
+        ).addTo(map);
+
+        // 이동 경로 좌표 저장
+        const route = [];
+
+        // 각 좌표에 마커 표시
+        gpsData.forEach((point, index) => {
+
+            const latitude = point[0];
+            const longitude = point[1];
+            const speed = point[2];
+
+            route.push([latitude, longitude]);
+
+            // 마커 생성
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup(
+                    "<b>지점 " + (index + 1) + "</b><br>" +
+                    "위도: " + latitude + "<br>" +
+                    "경도: " + longitude + "<br>" +
+                    "속도: " + speed
+                );
+        });
+
+        // 좌표들을 선으로 연결
+        const polyline = L.polyline(route, {
+            color: 'blue',
+            weight: 5
+        }).addTo(map);
+
+        // 전체 경로가 보이도록 지도 조정
+        map.fitBounds(polyline.getBounds(), {
+            padding: [30, 30]
+        });
+
+    </script>
+
+</body>
+</html>

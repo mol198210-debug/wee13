@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>GPS 위치 지도</title>
+
+    <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>GPS 이동 경로</h2>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+fetch("geo.json")
+.then(response => response.json())
+.then(data => {
+
+    const map = L.map('map');
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            attribution: '&copy; OpenStreetMap'
+        }
+    ).addTo(map);
+
+    const route = [];
+
+    data.forEach((item, index) => {
+
+        const position = [
+            item.latitude,
+            item.longitude
+        ];
+
+        route.push(position);
+
+        L.marker(position)
+        .addTo(map)
+        .bindPopup(
+            "지점: " + (index + 1) +
+            "<br>위도: " + item.latitude +
+            "<br>경도: " + item.longitude +
+            "<br>속도: " + item.speed
+        );
+    });
+
+    const line = L.polyline(route, {
+        color: 'blue',
+        weight: 4
+    }).addTo(map);
+
+    map.fitBounds(line.getBounds());
+
+});
+</script>
+
+</body>
+</html>
